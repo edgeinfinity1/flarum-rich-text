@@ -156,7 +156,7 @@ export default class ProseMirrorEditorDriver {
    * @param {String} text
    */
   insertAtCursor(text, escape) {
-    this.insertAt(this.getSelectionRange()[0] + 1, text, escape);
+    this.insertAt(this.getSelectionRange()[0], text, escape);
     $(this.view.dom).trigger('click');
   }
 
@@ -186,16 +186,26 @@ export default class ProseMirrorEditorDriver {
 
     const OFFSET_TO_REMOVE_PREFIX_NEWLINE = 1;
 
+    const doc = this.view.state.doc;
+    
+    if (start > 0) {
+      const $pos = doc.resolve(start);
+      const before = $pos.nodeBefore;
+    
+      if ((before && before.isText && before.text === '\n') || !before) {
+        start -= 1;
+      }
+    }
+
     if (escape) {
       this.view.dispatch(this.view.state.tr.insertText(text, start, end));
     } else {
-      // Without this, a newline would be added before the inserted text.
-      start -= OFFSET_TO_REMOVE_PREFIX_NEWLINE;
       const parsedText = this.parseInitialValue(text);
-      this.view.dispatch(this.view.state.tr.replaceRangeWith(start, end, parsedText));
-
-      trailingNewLines = text.match(/\s+$/)[0].split('\n').length - 1;
+      this.view.dispatch(
+        this.view.state.tr.replaceRangeWith(start, end, parsedText)
+      );
     }
+
 
     // Move the textarea cursor to the end of the content we just inserted.
     // The offset is necessary so the new cursor position doesn't split the inserted text
@@ -206,6 +216,10 @@ export default class ProseMirrorEditorDriver {
     // TODO: accomplish this in one step.
     if (text.endsWith(' ') && !escape) {
       this.insertAtCursor(' ');
+    }
+
+    if (text.endsWith('\n') && text != '\n' && text != '\n\n') {
+      this.insertAtCursor('\n\n', false);
     }
 
     Array(trailingNewLines)
