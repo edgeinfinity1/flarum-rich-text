@@ -156,7 +156,7 @@ export default class ProseMirrorEditorDriver {
    * @param {String} text
    */
   insertAtCursor(text, escape) {
-    this.insertAt(this.getSelectionRange()[0], text, escape);
+    this.insertAt(this.getSelectionRange()[0] + 1, text, escape);
     $(this.view.dom).trigger('click');
   }
 

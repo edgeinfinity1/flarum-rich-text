@@ -12,21 +12,20 @@ import MenuState from './states/MenuState';
 export default function applyEditor() {
   extend(TextEditor.prototype, 'oninit', function () {
     // 在实例初始化时设置状态
-    this.useRichTextEditor = app.session.user ? 
-      app.session.user.preferences().useRichTextEditor : true;
+    this.useRichTextEditor = app.session.user ? app.session.user.preferences().useRichTextEditor : true;
   });
-  
+
   extend(TextEditor.prototype, 'controlItems', function (items) {
     if (!app.forum.attribute('toggleRichTextEditorButton')) return;
 
     const buttonOnClick = () => {
       this.useRichTextEditor = !app.session.user.preferences().useRichTextEditor;
-      
-      console.log("Destroying old composer");
+
+      console.log('Destroying old composer');
       app.composer.editor.destroy();
-      console.log("Old composer destroyed");
+      console.log('Old composer destroyed');
       this.attrs.composer.editor = this.buildEditor(this.$('.TextEditor-editorContainer')[0]);
-        
+
       app.session.user.savePreferences({ useRichTextEditor: !app.session.user.preferences().useRichTextEditor }).then(() => {
         m.redraw.sync();
         app.composer.editor.focus();
