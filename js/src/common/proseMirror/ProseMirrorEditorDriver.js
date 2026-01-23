@@ -9,6 +9,7 @@ import { gapCursor } from 'prosemirror-gapcursor';
 import ItemList from 'flarum/common/utils/ItemList';
 import disabledPlugin from './plugins/disabledPlugin';
 import disableBase64PastePlugin from './plugins/disableBase64PastePlugin';
+import disableImagePastePlugin from './plugins/disableImagePastePlugin';
 import placeholderPlugin from './plugins/placeholderPlugin';
 import menuPlugin from './plugins/menuPlugin';
 import toggleSpoiler from './plugins/toggleSpoiler';
@@ -81,6 +82,8 @@ export default class ProseMirrorEditorDriver {
     items.add('disabled', disabledPlugin());
 
     items.add('disableBase64Paste', disableBase64PastePlugin());
+
+    items.add('disableImagePastePlugin', disableImagePastePlugin());
 
     items.add('dropCursor', dropCursor());
 
@@ -183,34 +186,32 @@ export default class ProseMirrorEditorDriver {
    * @param text
    * @param rawMarkdown
    */
-   
+
   exitBlockquote(view) {
     const { state, dispatch } = view;
     const { selection, schema } = state;
     const { $from } = selection;
-  
+
     for (let depth = $from.depth; depth > 0; depth--) {
       const node = $from.node(depth);
-  
+
       if (node.type === schema.nodes.blockquote) {
         const posAfter = $from.after(depth);
-  
+
         const tr = state.tr;
         tr.insert(posAfter, schema.nodes.paragraph.create());
-  
+
         // 将光标移动到新段落中
-        tr.setSelection(
-          TextSelection.create(tr.doc, posAfter + 1)
-        );
-  
+        tr.setSelection(TextSelection.create(tr.doc, posAfter + 1));
+
         dispatch(tr);
         return true;
       }
     }
-  
+
     return false;
   }
-   
+
   insertBetween(start, end, text, escape = true) {
     let trailingNewLines = 0;
 
