@@ -21,15 +21,15 @@ export default function applyEditor() {
     const buttonOnClick = () => {
       this.useRichTextEditor = !app.session.user.preferences().useRichTextEditor;
 
-      console.log('Destroying old composer');
+      // console.log('Destroying old composer');
       app.composer.editor.destroy();
-      console.log('Old composer destroyed');
+      // console.log('Old composer destroyed');
       this.attrs.composer.editor = this.buildEditor(this.$('.TextEditor-editorContainer')[0]);
 
       app.session.user.savePreferences({ useRichTextEditor: !app.session.user.preferences().useRichTextEditor }).then(() => {
         m.redraw.sync();
         app.composer.editor.focus();
-        console.log(app.composer.editor);
+        // console.log(app.composer.editor);
       });
     };
 
