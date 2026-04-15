@@ -5,11 +5,11 @@ export default function disableImagePastePlugin() {
     props: {
       transformPastedHTML(html) {
         const doc = new DOMParser().parseFromString(html, 'text/html');
-  
-        doc.querySelectorAll('img').forEach(img => img.remove());
-  
+
+        doc.querySelectorAll('img').forEach((img) => img.remove());
+
         return doc.body.innerHTML;
-      }
-    }
+      },
+    },
   });
 }
